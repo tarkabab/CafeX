@@ -7,4 +7,8 @@ object CafeX {
     Nil
 }
 
-case class MenuItem(name: String, category: String, price: BigDecimal) {}
+case class MenuItem(name: String, category: String, price: BigDecimal)
+
+case class Bill(items: List[(MenuItem, Int)]) {
+  def suggestTip(): BigDecimal = ???
+}

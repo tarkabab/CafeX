@@ -3,7 +3,7 @@ import org.scalatest._
 class CafeXSpec extends FlatSpec {
 
   "Cafe X" should "have a Menu" in {
-    CafeX.menu
+    assertCompiles("CafeX.menu")
   }
 
   "The Menu" should "have Cola" in {
@@ -63,4 +63,8 @@ class CafeXSpec extends FlatSpec {
     assert(hamSandwich.get.category == "Hot")
   }
 
+  "Bill" should "suggestTip" in {
+    val bill = Bill(Nil)
+    assertCompiles("bill.suggestTip()")
+  }
 }
