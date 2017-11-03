@@ -9,11 +9,15 @@ sbt ~test
 
 Coverage
 ```
-sbt ~test
+sbt coverage coverageReport
 ```
-results:
-target/scala-2.12/scoverage-report/index.html
+report: target/scala-2.12/scoverage-report/index.html
 
+[OWASP DependencyCheck](https://jeremylong.github.io/DependencyCheck/index.html)
+```
+sbt dependencyCheck
+```
+report: target/scala-2.12/dependency-check-report.html
 
 ## Requirement
 
