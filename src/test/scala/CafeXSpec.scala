@@ -6,7 +6,7 @@ class CafeXSpec extends FlatSpec {
     assertCompiles("CafeX.menu")
   }
 
-  "Standar Bill" should "be able to produce a total of the passed item list" in {
+  "Standard Bill" should "be able to produce a total of the passed item list" in {
     val total = StandardBill("Cola", "Coffee", "Cheese Sandwich").total
     assert(total == 3.5)
   }
@@ -18,10 +18,25 @@ class CafeXSpec extends FlatSpec {
     val total = StandardBill("No Such Item", "No Such Item 2", "Cola").total
     assert(total == 0.5)
   }
-  it should "be able to suggest Tip" in {
+  it should "be able to calculate Service Charge" in {
     val standardBill = StandardBill()
-    assertCompiles("standardBill.suggestTip()")
+    assertCompiles("standardBill.serviceCharge")
   }
+  it should "not calculate service charge when all purchased items are drinks" in {
+    val serviceCharge = StandardBill("Cola", "Coffee").serviceCharge
+    assert(serviceCharge == 0)
+  }
+  it should "calculate 10% service charge rounded to 2 decimal places, when purchased items include any food" in {
+    val standardBill = StandardBill("Cola", "Coffee", "Cheese Sandwich")
+    val expectedServiceCharge = standardBill.total * 0.1 setScale 2
+    assert(standardBill.serviceCharge == expectedServiceCharge)
+  }
+  it should "calculate 20% service charge, maximum 20Ł, when purchased items include any hot food" in {
+    val standardBill = StandardBill("Cola", "Coffee", "Ham Sandwich")
+    val expectedServiceCharge = standardBill.total * 0.2
+    assert(standardBill.serviceCharge == expectedServiceCharge)
+  }
+
 
   "The Menu" should "have Cola" in {
     assert(CafeX.menu.contains(MenuItem("Cola", isDrink = true, "Cold", 0.5)))

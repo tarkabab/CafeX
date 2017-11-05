@@ -7,7 +7,9 @@ object CafeX {
     MenuItem("Ham Sandwich", isDrink = false, "Hot", 4.5) ::
     Nil
 
-  def priceOf(itemName: String):Option[BigDecimal] = menu.find(_.name == itemName).map(_.price)
+  def findByName(itemName: String):Option[MenuItem] = menu.find(_.name == itemName)
+
+  def priceOf(itemName: String):Option[BigDecimal] = findByName(itemName).map(_.price)
 }
 
 case class MenuItem(name: String, isDrink: Boolean, category: String, price: BigDecimal)
@@ -15,6 +17,15 @@ case class MenuItem(name: String, isDrink: Boolean, category: String, price: Big
 case class StandardBill(itemNames: String*) {
 
   val total: BigDecimal = itemNames.flatMap(CafeX.priceOf).sum
-
-  def suggestTip(): BigDecimal = ??? // TODO: missing calculation information
+  val serviceCharge: BigDecimal = {
+    var drinksOnly = true
+    var haveHotFood = false
+    itemNames.flatMap(CafeX.findByName).foreach(menuItem => {
+      drinksOnly &= menuItem.isDrink
+      haveHotFood |= (menuItem.category == "Hot" && !menuItem.isDrink)
+    })
+    if(drinksOnly) { 0 }
+    else if(!haveHotFood) { total * 0.1 setScale 2}
+    else { total * 0.2 min 20 setScale 2}
+  }
 }
