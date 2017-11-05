@@ -6,6 +6,23 @@ class CafeXSpec extends FlatSpec {
     assertCompiles("CafeX.menu")
   }
 
+  "Standar Bill" should "be able to produce a total of the passed item list" in {
+    val total = StandardBill("Cola", "Coffee", "Cheese Sandwich").total
+    assert(total == 3.5)
+  }
+  it should "produce 0 when passed an empty item list" in {
+    val total = StandardBill().total
+    assert(total == 0)
+  }
+  it should "ignore item(s) not in the menu when calculating the total" in {
+    val total = StandardBill("No Such Item", "No Such Item 2", "Cola").total
+    assert(total == 0.5)
+  }
+  it should "be able to suggest Tip" in {
+    val standardBill = StandardBill()
+    assertCompiles("standardBill.suggestTip()")
+  }
+
   "The Menu" should "have Cola" in {
     assert(CafeX.menu.contains(MenuItem("Cola", "Cold", 0.5)))
   }
@@ -13,7 +30,7 @@ class CafeXSpec extends FlatSpec {
     assert(CafeX.menu.contains(MenuItem("Coffee", "Hot", 1)))
   }
   it should "have Cheese Sandwich" in {
-    assert(CafeX.menu.contains(MenuItem("Cheese Sandwich", "Cold", 1)))
+    assert(CafeX.menu.contains(MenuItem("Cheese Sandwich", "Cold", 2)))
   }
   it should "have Ham Sandwich" in {
     assert(CafeX.menu.contains(MenuItem("Ham Sandwich", "Hot", 4.5)))
@@ -41,10 +58,10 @@ class CafeXSpec extends FlatSpec {
     assert(coffee.get.category == "Hot")
   }
 
-  "Cheese Sandwich" should "cost Ł1" in {
+  "Cheese Sandwich" should "cost Ł2" in {
     val cheeseSandwich = CafeX.menu.collectFirst{ case item: MenuItem if item.name == "Cheese Sandwich" => item }
     assert(cheeseSandwich.nonEmpty)
-    assert(cheeseSandwich.get.price == 1)
+    assert(cheeseSandwich.get.price == 2)
   }
   it should "be categorized as Cold" in {
     val cheeseSandwich = CafeX.menu.collectFirst{ case item: MenuItem if item.name == "Cheese Sandwich" => item }
@@ -63,8 +80,4 @@ class CafeXSpec extends FlatSpec {
     assert(hamSandwich.get.category == "Hot")
   }
 
-  "Bill" should "suggestTip" in {
-    val bill = Bill(Nil)
-    assertCompiles("bill.suggestTip()")
-  }
 }
