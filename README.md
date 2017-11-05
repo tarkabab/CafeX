@@ -1,7 +1,7 @@
-# CafeX
+# Project CafeX
 
 
-## Developers Help
+## For Developers
 
 Continuous testing 
 ```
@@ -26,7 +26,7 @@ sbt scalastyle
 ```
 report: target/scalastyle-result.xml
 
-## Requirement
+## Original Requirement
 
 Developer Exercise: Recruitment
 
