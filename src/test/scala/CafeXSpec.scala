@@ -39,67 +39,67 @@ class CafeXSpec extends FlatSpec {
 
 
   "The Menu" should "have Cola" in {
-    assert(CafeX.menu.contains(MenuItem("Cola", isDrink = true, "Cold", 0.5)))
+    assert(CafeX.menu.findByName("Cola").isDefined)
   }
   it should "have Coffee" in {
-    assert(CafeX.menu.contains(MenuItem("Coffee", isDrink = true, "Hot", 1)))
+    assert(CafeX.menu.findByName("Coffee").isDefined)
   }
   it should "have Cheese Sandwich" in {
-    assert(CafeX.menu.contains(MenuItem("Cheese Sandwich", isDrink = false, "Cold", 2)))
+    assert(CafeX.menu.findByName("Cheese Sandwich").isDefined)
   }
   it should "have Ham Sandwich" in {
-    assert(CafeX.menu.contains(MenuItem("Ham Sandwich", isDrink = false, "Hot", 4.5)))
+    assert(CafeX.menu.findByName("Ham Sandwich").isDefined)
   }
 
   "Cola" should "cost 50p" in {
-    val cola = CafeX.menu.find(_.name == "Cola").get
+    val cola = CafeX.menu.findByName("Cola").get
     assert(cola.price == 0.5)
   }
   it should "be categorized as Cold" in {
-    val cola = CafeX.menu.find(_.name == "Cola").get
+    val cola = CafeX.menu.findByName("Cola").get
     assert(cola.category == "Cold")
   }
   it should "be considered as a Drink" in {
-    val cola = CafeX.menu.find(_.name == "Cola").get
+    val cola = CafeX.menu.findByName("Cola").get
     assert(cola.isDrink)
   }
 
   "Coffee" should "cost Ł1" in {
-    val coffee = CafeX.menu.find(_.name == "Coffee").get
+    val coffee = CafeX.menu.findByName("Coffee").get
     assert(coffee.price == 1)
   }
   it should "be categorized as Hot" in {
-    val coffee = CafeX.menu.find(_.name == "Coffee").get
+    val coffee = CafeX.menu.findByName("Coffee").get
     assert(coffee.category == "Hot")
   }
   it should "be considered as a Drink" in {
-    val coffee = CafeX.menu.find(_.name == "Coffee").get
+    val coffee = CafeX.menu.findByName("Coffee").get
     assert(coffee.isDrink)
   }
 
   "Cheese Sandwich" should "cost Ł2" in {
-    val cheeseSandwich = CafeX.menu.find(_.name == "Cheese Sandwich").get
+    val cheeseSandwich = CafeX.menu.findByName("Cheese Sandwich").get
     assert(cheeseSandwich.price == 2)
   }
   it should "be categorized as Cold" in {
-    val cheeseSandwich = CafeX.menu.find(_.name == "Cheese Sandwich").get
+    val cheeseSandwich = CafeX.menu.findByName("Cheese Sandwich").get
     assert(cheeseSandwich.category == "Cold")
   }
   it should "not be considered as a Drink" in {
-    val cheeseSandwich = CafeX.menu.find(_.name == "Cheese Sandwich").get
+    val cheeseSandwich = CafeX.menu.findByName("Cheese Sandwich").get
     assert(!cheeseSandwich.isDrink)
   }
 
   "Ham Sandwich" should "cost Ł4.50" in {
-    val hamSandwich = CafeX.menu.find(_.name == "Ham Sandwich").get
+    val hamSandwich = CafeX.menu.findByName("Ham Sandwich").get
     assert(hamSandwich.price == 4.5)
   }
   it should "be categorized as Hot" in {
-    val hamSandwich = CafeX.menu.find(_.name == "Ham Sandwich").get
+    val hamSandwich = CafeX.menu.findByName("Ham Sandwich").get
     assert(hamSandwich.category == "Hot")
   }
   it should "not be considered as a Drink" in {
-    val hamSandwich = CafeX.menu.find(_.name == "Ham Sandwich").get
+    val hamSandwich = CafeX.menu.findByName("Ham Sandwich").get
     assert(!hamSandwich.isDrink)
   }
 
