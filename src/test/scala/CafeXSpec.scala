@@ -36,6 +36,17 @@ class CafeXSpec extends FlatSpec {
     val expectedServiceCharge = standardBill.total * 0.2
     assert(standardBill.serviceCharge == expectedServiceCharge)
   }
+  it should "calculate service charge 1.2Ł (20%) for items: \"Cola\", \"Coffee\", \"Ham Sandwich\"" in {
+    val serviceCharge = StandardBill("Cola", "Coffee", "Ham Sandwich").serviceCharge
+    val expectedServiceCharge = 1.2
+    assert(serviceCharge == expectedServiceCharge)
+  }
+  it should "calculate service charge max 20Ł for items: 40 x \"Ham Sandwich\"" in {
+    val copiousAmount = 40
+    val serviceCharge = StandardBill(List.fill(copiousAmount)("Ham Sandwich"):_*).serviceCharge
+    val expectedServiceCharge = 20
+    assert(serviceCharge == expectedServiceCharge)
+  }
 
 
   "The Menu" should "have Cola" in {
