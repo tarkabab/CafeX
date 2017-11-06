@@ -1,12 +1,6 @@
-object CafeX {
+import scala.math.BigDecimal.RoundingMode.HALF_UP
 
-  val menu = Menu(
-    MenuItem("Cola", isDrink = true, "Cold", 0.5) ::
-    MenuItem("Coffee", isDrink = true, "Hot", 1) ::
-    MenuItem("Cheese Sandwich", isDrink = false, "Cold", 2) ::
-    MenuItem("Ham Sandwich", isDrink = false, "Hot", 4.5) ::
-    Nil)
-}
+case class CafeX(menu: Menu)
 
 case class Menu(items: List[MenuItem]) {
   private val dictionary: Map[String, MenuItem] =
@@ -18,18 +12,18 @@ case class Menu(items: List[MenuItem]) {
 
 case class MenuItem(name: String, isDrink: Boolean, category: String, price: BigDecimal)
 
-case class StandardBill(itemNames: String*) {
+case class StandardBill(menu: Menu, itemNames: String*) {
 
-  val total: BigDecimal = itemNames.flatMap(CafeX.menu.priceOf).sum
+  val total: BigDecimal = itemNames.flatMap(menu.priceOf).sum
   val serviceCharge: BigDecimal = {
     var drinksOnly = true
     var haveHotFood = false
-    itemNames.flatMap(CafeX.menu.findByName).foreach(menuItem => {
+    itemNames.flatMap(menu.findByName).foreach(menuItem => {
       drinksOnly &= menuItem.isDrink
       haveHotFood |= (menuItem.category == "Hot" && !menuItem.isDrink)
     })
     if(drinksOnly) { 0 }
-    else if(!haveHotFood) { total * 0.1 setScale 2}
-    else { total * 0.2 min 20 setScale 2}
+    else if(!haveHotFood) { (total * 0.1).setScale(2, HALF_UP)}
+    else { (total * 0.2).setScale(2, HALF_UP) min 20}
   }
 }
