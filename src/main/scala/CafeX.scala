@@ -1,3 +1,4 @@
+import scala.math.BigDecimal
 import scala.math.BigDecimal.RoundingMode.HALF_UP
 
 case class CafeX(menu: Menu)
@@ -14,6 +15,7 @@ case class MenuItem(name: String, isDrink: Boolean, category: String, price: Big
 
 case class StandardBill(menu: Menu, itemNames: String*) {
 
+  val roundingMode: BigDecimal.RoundingMode.Value = HALF_UP
   val total: BigDecimal = itemNames.flatMap(menu.priceOf).sum
   val serviceCharge: BigDecimal = {
     var drinksOnly = true
@@ -23,7 +25,7 @@ case class StandardBill(menu: Menu, itemNames: String*) {
       haveHotFood |= (menuItem.category == "Hot" && !menuItem.isDrink)
     })
     if(drinksOnly) { 0 }
-    else if(!haveHotFood) { (total * 0.1).setScale(2, HALF_UP)}
-    else { (total * 0.2).setScale(2, HALF_UP) min 20}
+    else if(!haveHotFood) { (total * 0.1).setScale(2, roundingMode)}
+    else { (total * 0.2).setScale(2, roundingMode) min 20}
   }
 }

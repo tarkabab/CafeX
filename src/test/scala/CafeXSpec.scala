@@ -1,7 +1,5 @@
 import org.scalatest._
 
-import scala.math.BigDecimal.RoundingMode.HALF_UP
-
 trait DefaultMenu {
   val defaultMenu: Menu = Menu(
     MenuItem("Cola", isDrink = true, "Cold", 0.5) ::
@@ -35,34 +33,34 @@ class CafeXSpec extends FlatSpec {
     assert(total == 0.5)
   }
   it should "be able to calculate Service Charge" in new DefaultMenu {
-    val standardBill = StandardBill(defaultMenu)
-    assertCompiles("standardBill.serviceCharge")
+    val bill = StandardBill(defaultMenu)
+    assertCompiles("bill.serviceCharge")
   }
   it should "not calculate service charge when all purchased items are drinks" in new DefaultMenu {
     val serviceCharge = StandardBill(defaultMenu, "Cola", "Coffee").serviceCharge
     assert(serviceCharge == 0)
   }
   it should "calculate 10% service charge rounded to 2 decimal places, when purchased items include any food" in new DefaultMenu {
-    val standardBill = StandardBill(defaultMenu, "Cola", "Coffee", "Cheese Sandwich")
-    val expectedServiceCharge = (standardBill.total * 0.1).setScale(2, HALF_UP)
-    assert(standardBill.serviceCharge == expectedServiceCharge)
+    val bill = StandardBill(defaultMenu, "Cola", "Coffee", "Cheese Sandwich")
+    val expectedServiceCharge = (bill.total * 0.1).setScale(2, bill.roundingMode)
+    assert(bill.serviceCharge == expectedServiceCharge)
   }
   it should "calculate service charge 0.05 for items: 11 x \"Straw\" cost 5p each" in new MenuForRoundingCase {
     val numberOfItems = 11
-    val standardBill = StandardBill(menu, List.fill(numberOfItems)("Straw"):_*)
-    val expectedServiceCharge = BigDecimal(numberOfItems * 0.05 * 0.1).setScale(2, HALF_UP)
-    assert(standardBill.serviceCharge == expectedServiceCharge)
+    val bill = StandardBill(menu, List.fill(numberOfItems)("Straw"):_*)
+    val expectedServiceCharge = BigDecimal(numberOfItems * 0.05 * 0.1).setScale(2, bill.roundingMode)
+    assert(bill.serviceCharge == expectedServiceCharge)
   }
   it should "calculate service charge 0.05 for items: 9 x \"Straw\" cost 5p each" in new MenuForRoundingCase {
     val numberOfItems = 9
-    val standardBill = StandardBill(menu, List.fill(numberOfItems)("Straw"):_*)
-    val expectedServiceCharge = BigDecimal(numberOfItems * 0.05 * 0.1).setScale(2, HALF_UP)
-    assert(standardBill.serviceCharge == expectedServiceCharge)
+    val bill = StandardBill(menu, List.fill(numberOfItems)("Straw"):_*)
+    val expectedServiceCharge = BigDecimal(numberOfItems * 0.05 * 0.1).setScale(2, bill.roundingMode)
+    assert(bill.serviceCharge == expectedServiceCharge)
   }
   it should "calculate 20% service charge, maximum 20Ł, when purchased items include any hot food" in new DefaultMenu {
-    val standardBill = StandardBill(defaultMenu, "Cola", "Coffee", "Ham Sandwich")
-    val expectedServiceCharge = (standardBill.total * 0.2).setScale(2, HALF_UP)
-    assert(standardBill.serviceCharge == expectedServiceCharge)
+    val bill = StandardBill(defaultMenu, "Cola", "Coffee", "Ham Sandwich")
+    val expectedServiceCharge = (bill.total * 0.2).setScale(2, bill.roundingMode)
+    assert(bill.serviceCharge == expectedServiceCharge)
   }
   it should "calculate service charge 1.2Ł (20%) for items: \"Cola\" 50p, \"Coffee\" 1Ł, \"Ham Sandwich\" 4.5Ł" in new DefaultMenu {
     val serviceCharge = StandardBill(defaultMenu, "Cola", "Coffee", "Ham Sandwich").serviceCharge
