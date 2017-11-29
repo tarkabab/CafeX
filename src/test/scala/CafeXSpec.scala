@@ -2,16 +2,17 @@ import org.scalatest._
 
 trait DefaultMenu {
   val defaultMenu: Menu = Menu(
-    MenuItem("Cola", isDrink = true, "Cold", 0.5) ::
-      MenuItem("Coffee", isDrink = true, "Hot", 1) ::
-      MenuItem("Cheese Sandwich", isDrink = false, "Cold", 2) ::
-      MenuItem("Ham Sandwich", isDrink = false, "Hot", 4.5) ::
+    MenuItem("Cola", isDrink = true, isPremium = false, "Cold", 0.5) ::
+      MenuItem("Coffee", isDrink = true, isPremium = false, "Hot", 1) ::
+      MenuItem("Cheese Sandwich", isDrink = false, isPremium = false, "Cold", 2) ::
+      MenuItem("Ham Sandwich", isDrink = false, isPremium = false, "Hot", 4.5) ::
+      MenuItem("Lobster", isDrink = false, isPremium = true, "Hot", 25) ::
       Nil)
 }
 
 trait MenuForRoundingCase {
   val menu: Menu = Menu(
-    MenuItem("Straw", isDrink = false, "Cold", 0.05) :: Nil)
+    MenuItem("Straw", isDrink = false, isPremium = false, "Cold", 0.05) :: Nil)
 }
 
 class CafeXSpec extends FlatSpec {
@@ -71,6 +72,17 @@ class CafeXSpec extends FlatSpec {
     private val copiousAmount = 40
     private val serviceCharge = StandardBill(defaultMenu, List.fill(copiousAmount)("Ham Sandwich"):_*).serviceCharge
     private val expectedServiceCharge = 20
+    assert(serviceCharge == expectedServiceCharge)
+  }
+  it should "apply a service charge of 25% to the total bill when the orders have premium item" in new DefaultMenu {
+    private val serviceCharge = StandardBill(defaultMenu, List("Lobster"):_*).serviceCharge
+    private val expectedServiceCharge = 6.25
+    assert(serviceCharge == expectedServiceCharge)
+  }
+  it should "apply a maximum charge of 40Ł to the total bill when the orders have at least one premium item" in new DefaultMenu {
+    private val copiousAmount = 7
+    private val serviceCharge = StandardBill(defaultMenu, List.fill(copiousAmount)("Lobster"):_*).serviceCharge
+    private val expectedServiceCharge = 40
     assert(serviceCharge == expectedServiceCharge)
   }
 
@@ -138,6 +150,23 @@ class CafeXSpec extends FlatSpec {
   it should "not be considered as a Drink" in new DefaultMenu {
     private val hamSandwich = defaultMenu.findByName("Ham Sandwich").get
     assert(!hamSandwich.isDrink)
+  }
+
+  "Lobster" should "cost Ł25" in new DefaultMenu {
+    private val lobster = defaultMenu.findByName("Lobster").get
+    assert(lobster.price == 25)
+  }
+  it should "be categorized as Hot" in new DefaultMenu {
+    private val lobster = defaultMenu.findByName("Lobster").get
+    assert(lobster.category == "Hot")
+  }
+  it should "not be considered as a Drink" in new DefaultMenu {
+    private val lobster = defaultMenu.findByName("Lobster").get
+    assert(!lobster.isDrink)
+  }
+  it should "be a premium item" in new DefaultMenu {
+    private val lobster = defaultMenu.findByName("Lobster").get
+    assert(lobster.isPremium)
   }
 
 }
