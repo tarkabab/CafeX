@@ -18,27 +18,26 @@ case class StandardBill(menu: Menu, itemNames: String*) {
 
   val roundingMode: Value = HALF_UP
   val total: BigDecimal = itemNames.flatMap(menu.priceOf).sum
-  val serviceCharge: BigDecimal = {
-    val (drinksOnly, haveHotFood, havePremiumItem) = analyzeOrders(itemNames.toList)
-    calculateServiceCharge(drinksOnly, haveHotFood, havePremiumItem)
+  val serviceCharge: BigDecimal = calculateServiceCharge(analyzeOrders(itemNames.toList))
+
+  case class BillAnalysisResult(drinksOnly: Boolean, haveHotFood: Boolean, havePremiumItem: Boolean)
+
+  protected def analyzeOrders(orders: List[String]): BillAnalysisResult = {
+    itemNames
+      .flatMap(menu.findByName)
+      .foldLeft(BillAnalysisResult(drinksOnly = true, haveHotFood = false, havePremiumItem = false)) {
+        (result, menuItem) => BillAnalysisResult(
+          result.drinksOnly & menuItem.isDrink,
+          result.haveHotFood | (menuItem.category == "Hot" && !menuItem.isDrink),
+          result.havePremiumItem | menuItem.isPremium
+        )
+      }
   }
 
-  private def calculateServiceCharge(drinksOnly: Boolean, haveHotFood: Boolean, havePremiumItem: Boolean): BigDecimal = {
-    if(havePremiumItem) { (total * 0.25).setScale(2, roundingMode) min 40 }
-    else if(drinksOnly) { 0 }
-    else if(!haveHotFood) { (total * 0.1).setScale(2, roundingMode) }
+  protected def calculateServiceCharge(result: BillAnalysisResult): BigDecimal = {
+    if(result.havePremiumItem) { (total * 0.25).setScale(2, roundingMode) min 40 }
+    else if(result.drinksOnly) { 0 }
+    else if(!result.haveHotFood) { (total * 0.1).setScale(2, roundingMode) }
     else { (total * 0.2).setScale(2, roundingMode) min 20 }
-  }
-
-  private def analyzeOrders(orders: List[String]): (Boolean, Boolean, Boolean) = {
-    var drinksOnly = true
-    var haveHotFood = false
-    var havePremiumItem = false
-    itemNames.flatMap(menu.findByName).foreach(menuItem => {
-      drinksOnly &= menuItem.isDrink
-      havePremiumItem |= menuItem.isPremium
-      haveHotFood |= (menuItem.category == "Hot" && !menuItem.isDrink)
-    })
-    (drinksOnly, haveHotFood, havePremiumItem)
   }
 }
